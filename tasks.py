@@ -1,11 +1,24 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+
 from flask_celery import make_celery
 import time
+import pdfkit
 
+
+#DATABASE
 app =Flask(__name__)
-#app = Celery('tasks', broker='amqp://172.17.0.2//',backend='redis://172.17.0.3')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///user.db'
+db = SQLAlchemy(app)
+
+class User(db.Model):
+    username = db.Column(db.String(50),primary_key=True)
+    email = db.Column(db.String(50))
+
+
+#CELERY
 app.config['CELERY_BROKER_URL'] = 'amqp://172.17.0.2//'
-app.config['CELERY_BACKEND'] = 'redis://172.17.0.3'
+#app.config['CELERY_BACKEND'] = 'redis://172.17.0.3'
 
 celery = make_celery(app)
 
